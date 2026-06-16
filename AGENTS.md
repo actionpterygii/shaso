@@ -9,7 +9,7 @@
 - 明示されない限り、静的な HTML / CSS / JavaScript で実装する。
 - フレームワークは、必要性が明確な場合だけ導入する。
 - DNS や GitHub リポジトリ設定は、明示的に依頼された場合だけ変更する。
-- ユーザーが push を依頼した場合は、変更をコミットして `origin master` に push する。
+- commit と push は、実行前にユーザーの承認を得てから行う。
 
 ## 確認方法
 - 現在 Codex ではブラウザ確認ができないため、ユーザーが `https://shaso.actionpterygii.com/` を確認する。
