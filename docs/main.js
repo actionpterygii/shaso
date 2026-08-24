@@ -34,8 +34,6 @@ const cube = new THREE.Mesh(
 cube.position.y = 1.45;
 scene.add(cube);
 
-const railMaterial = new THREE.MeshStandardMaterial({ color: 0xdfe6f2, roughness: 0.58 });
-const sleeperMaterial = new THREE.MeshStandardMaterial({ color: 0x46505d, roughness: 0.8 });
 const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x1b2330, roughness: 1 });
 
 const ground = new THREE.Mesh(new THREE.PlaneGeometry(26, 80), groundMaterial);
@@ -43,36 +41,14 @@ ground.rotation.x = -Math.PI / 2;
 ground.position.z = -15;
 scene.add(ground);
 
-for (const x of [-1.15, 1.15]) {
-    const rail = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 80), railMaterial);
-    rail.position.set(x, 0.08, -15);
-    scene.add(rail);
-}
-
-const sleepers = [];
-for (let i = 0; i < 34; i += 1) {
-    const sleeper = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.08, 0.18), sleeperMaterial);
-    sleeper.position.set(0, 0.04, 8 - i * 1.6);
-    sleepers.push(sleeper);
-    scene.add(sleeper);
-}
-
 const clock = new THREE.Clock();
-const speed = 9;
 
 function animate() {
-    const delta = clock.getDelta();
+    clock.getDelta();
     const elapsed = clock.elapsedTime;
 
     cube.rotation.x = elapsed * 0.7;
     cube.rotation.y = elapsed * 1.05;
-
-    for (const sleeper of sleepers) {
-        sleeper.position.z += speed * delta;
-        if (sleeper.position.z > 9) {
-            sleeper.position.z -= sleepers.length * 1.6;
-        }
-    }
 
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
