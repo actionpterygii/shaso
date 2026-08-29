@@ -2,7 +2,7 @@ html,
 body {
     margin: 0;
     min-height: 100%;
-    background: #101319;
+    background: #8ed5f0;
     color: #f5f7fb;
     font-family: Arial, Helvetica, sans-serif;
 }
@@ -23,9 +23,9 @@ body {
     z-index: 1;
     max-width: min(340px, calc(100vw - 40px));
     padding: 14px 16px;
-    background: rgba(16, 19, 25, 0.72);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 8px;
+    background: rgba(11, 29, 47, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 12px;
     backdrop-filter: blur(10px);
 }
 
@@ -36,7 +36,7 @@ body {
 }
 
 .eyebrow {
-    color: #8be7ff;
+    color: #9eeaff;
     font-size: 12px;
     line-height: 1.4;
     text-transform: uppercase;
@@ -49,13 +49,32 @@ body {
     font-weight: 700;
 }
 
-#status {
-    margin-top: 8px;
-    color: #d8dde8;
+#toggle {
+    margin-top: 14px;
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
     font-size: 14px;
-    line-height: 1.5;
+}
+
+.hud > p:not(.eyebrow) {
+    margin-top: 10px;
+    color: #d8e5ee;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#toggle:hover,
+#toggle:focus-visible {
+    background: rgba(255, 255, 255, 0.24);
 }
 
 canvas {
     display: block;
+    width: 100%;
+    height: 100%;
 }
