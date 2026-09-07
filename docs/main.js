@@ -24,6 +24,7 @@ function addBuilding(layer, x) {
         width: buildingWidth,
         height: randomBetween(layer.minHeight, layer.maxHeight),
         roof: Math.random() > 0.7,
+        lightSeed: Math.floor(Math.random() * 1000),
         gap: randomBetween(18, 60)
     });
 }
@@ -57,11 +58,17 @@ function drawBuilding(building, layer, groundY) {
         context.fillRect(building.x + building.width * 0.14, top - 10, building.width * 0.72, 10);
     }
 
-    context.fillStyle = 'rgba(255, 231, 158, 0.5)';
+    const lightLevels = [0, 0.18, 0.36, 0.58, 0.82];
+    let row = 0;
     for (let y = top + 16; y < groundY - 10; y += 19) {
+        let column = 0;
         for (let x = building.x + 12; x < building.x + building.width - 8; x += 18) {
-            if ((Math.floor(x + y) % 3) !== 0) context.fillRect(x, y, 7, 7);
+            const level = (building.lightSeed + row * 7 + column * 11) % lightLevels.length;
+            context.fillStyle = `rgba(255, 231, 158, ${lightLevels[level]})`;
+            context.fillRect(x, y, 7, 7);
+            column += 1;
         }
+        row += 1;
     }
 }
 
