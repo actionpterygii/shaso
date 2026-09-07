@@ -3,9 +3,9 @@ const context = canvas.getContext('2d');
 const toggle = document.querySelector('#toggle');
 
 const layers = [
-    { speed: 14, baseY: 0.57, color: '#7aa0af', minWidth: 90, maxWidth: 190, minHeight: 35, maxHeight: 105, items: [] },
-    { speed: 38, baseY: 0.71, color: '#4f7180', minWidth: 65, maxWidth: 135, minHeight: 60, maxHeight: 165, items: [] },
-    { speed: 95, baseY: 0.91, color: '#213e4e', minWidth: 45, maxWidth: 105, minHeight: 85, maxHeight: 235, items: [] }
+    { speed: 14, baseY: 0.57, color: '#7aa0af', sideColor: '#587d8d', roofColor: '#93bac6', depth: 10, minWidth: 90, maxWidth: 190, minHeight: 35, maxHeight: 105, items: [] },
+    { speed: 38, baseY: 0.71, color: '#4f7180', sideColor: '#345a6a', roofColor: '#7199a7', depth: 16, minWidth: 65, maxWidth: 135, minHeight: 60, maxHeight: 165, items: [] },
+    { speed: 95, baseY: 0.91, color: '#213e4e', sideColor: '#142c39', roofColor: '#426575', depth: 24, minWidth: 45, maxWidth: 105, minHeight: 85, maxHeight: 235, items: [] }
 ];
 
 let width = 0;
@@ -51,6 +51,26 @@ function resize() {
 
 function drawBuilding(building, layer, groundY) {
     const top = groundY - building.height;
+    const depth = layer.depth;
+
+    context.fillStyle = layer.sideColor;
+    context.beginPath();
+    context.moveTo(building.x + building.width, top);
+    context.lineTo(building.x + building.width + depth, top - depth * 0.55);
+    context.lineTo(building.x + building.width + depth, groundY - depth * 0.55);
+    context.lineTo(building.x + building.width, groundY);
+    context.closePath();
+    context.fill();
+
+    context.fillStyle = layer.roofColor;
+    context.beginPath();
+    context.moveTo(building.x, top);
+    context.lineTo(building.x + depth, top - depth * 0.55);
+    context.lineTo(building.x + building.width + depth, top - depth * 0.55);
+    context.lineTo(building.x + building.width, top);
+    context.closePath();
+    context.fill();
+
     context.fillStyle = layer.color;
     context.fillRect(building.x, top, building.width, building.height);
 
