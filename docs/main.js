@@ -51,22 +51,27 @@ function resize() {
 
 function drawBuilding(building, layer, groundY) {
     const top = groundY - building.height;
-    const depth = layer.depth;
+    const center = building.x + building.width / 2;
+    const viewOffset = (center / width - 0.5) * 2;
+    const depth = layer.depth * Math.min(Math.abs(viewOffset), 1);
+    const sideDirection = viewOffset < 0 ? 1 : -1;
+    const sideX = sideDirection > 0 ? building.x + building.width : building.x;
+    const perspectiveY = depth * 0.55;
 
     context.fillStyle = layer.sideColor;
     context.beginPath();
-    context.moveTo(building.x + building.width, top);
-    context.lineTo(building.x + building.width + depth, top - depth * 0.55);
-    context.lineTo(building.x + building.width + depth, groundY - depth * 0.55);
-    context.lineTo(building.x + building.width, groundY);
+    context.moveTo(sideX, top);
+    context.lineTo(sideX + sideDirection * depth, top - perspectiveY);
+    context.lineTo(sideX + sideDirection * depth, groundY - perspectiveY);
+    context.lineTo(sideX, groundY);
     context.closePath();
     context.fill();
 
     context.fillStyle = layer.roofColor;
     context.beginPath();
     context.moveTo(building.x, top);
-    context.lineTo(building.x + depth, top - depth * 0.55);
-    context.lineTo(building.x + building.width + depth, top - depth * 0.55);
+    context.lineTo(building.x + sideDirection * depth, top - perspectiveY);
+    context.lineTo(building.x + building.width + sideDirection * depth, top - perspectiveY);
     context.lineTo(building.x + building.width, top);
     context.closePath();
     context.fill();
