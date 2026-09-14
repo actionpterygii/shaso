@@ -2,11 +2,25 @@ const canvas = document.querySelector('#window-view');
 const context = canvas.getContext('2d');
 const toggle = document.querySelector('#toggle');
 
-const layers = [
-    { speed: 14, baseY: 0.57, color: '#7aa0af', sideColor: '#587d8d', roofColor: '#93bac6', depth: 10, minWidth: 90, maxWidth: 190, minHeight: 35, maxHeight: 105, items: [] },
-    { speed: 38, baseY: 0.71, color: '#4f7180', sideColor: '#345a6a', roofColor: '#7199a7', depth: 16, minWidth: 65, maxWidth: 135, minHeight: 60, maxHeight: 165, items: [] },
-    { speed: 95, baseY: 0.91, color: '#213e4e', sideColor: '#142c39', roofColor: '#426575', depth: 24, minWidth: 45, maxWidth: 105, minHeight: 85, maxHeight: 235, items: [] }
-];
+const layers = Array.from({ length: 20 }, (_, index) => {
+    const progress = index / 19;
+    const hue = 198 + progress * 2;
+    const lightness = 58 - progress * 38;
+
+    return {
+        speed: 9 + progress * 86,
+        baseY: 0.46 + progress * 0.45,
+        color: `hsl(${hue} 27% ${lightness}%)`,
+        sideColor: `hsl(${hue} 31% ${lightness - 13}%)`,
+        roofColor: `hsl(${hue} 25% ${lightness + 10}%)`,
+        depth: 6 + progress * 18,
+        minWidth: 78 - progress * 33,
+        maxWidth: 158 - progress * 53,
+        minHeight: 18 + progress * 67,
+        maxHeight: 68 + progress * 167,
+        items: []
+    };
+});
 
 let width = 0;
 let height = 0;
