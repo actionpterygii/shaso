@@ -124,14 +124,6 @@ function drawBackground() {
     context.fill();
 }
 
-function drawFrame() {
-    context.fillStyle = 'rgba(13, 22, 29, 0.9)';
-    context.fillRect(0, 0, width, 18);
-    context.fillRect(0, height - 32, width, 32);
-    context.fillRect(0, 0, 20, height);
-    context.fillRect(width - 20, 0, 20, height);
-}
-
 function render(timestamp) {
     const delta = Math.min((timestamp - previousTime) / 1000 || 0, 0.05);
     previousTime = timestamp;
@@ -154,7 +146,6 @@ function render(timestamp) {
 
     context.fillStyle = '#172d37';
     context.fillRect(0, height * 0.91, width, height * 0.09);
-    drawFrame();
     requestAnimationFrame(render);
 }
 
