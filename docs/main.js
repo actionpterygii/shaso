@@ -65,11 +65,10 @@ function resize() {
 
 function drawBuilding(building, layer, groundY) {
     const top = groundY - building.height;
-    const center = building.x + building.width / 2;
-    const viewOffset = (center / width - 0.5) * 2;
-    const depth = layer.depth * Math.min(Math.abs(viewOffset), 1);
-    const sideDirection = viewOffset < 0 ? 1 : -1;
-    const sideX = sideDirection > 0 ? building.x + building.width : building.x;
+    // Keep the building's perspective fixed as it moves across the screen.
+    const depth = layer.depth;
+    const sideDirection = -1;
+    const sideX = building.x;
     const perspectiveY = depth * 0.55;
 
     context.fillStyle = layer.sideColor;
