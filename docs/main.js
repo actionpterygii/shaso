@@ -11,9 +11,6 @@ const layers = Array.from({ length: 20 }, (_, index) => {
         speed: 9 + progress * 86,
         baseY: 0.46 + progress * 0.45,
         color: `hsl(${hue} 27% ${lightness}%)`,
-        sideColor: `hsl(${hue} 31% ${lightness - 13}%)`,
-        roofColor: `hsl(${hue} 25% ${lightness + 10}%)`,
-        depth: 6 + progress * 18,
         minWidth: 78 - progress * 33,
         maxWidth: 158 - progress * 53,
         minHeight: 18 + progress * 67,
@@ -65,30 +62,6 @@ function resize() {
 
 function drawBuilding(building, layer, groundY) {
     const top = groundY - building.height;
-    // Keep the building's perspective fixed as it moves across the screen.
-    const depth = layer.depth;
-    const sideDirection = -1;
-    const sideX = building.x;
-    const perspectiveY = depth * 0.55;
-
-    context.fillStyle = layer.sideColor;
-    context.beginPath();
-    context.moveTo(sideX, top);
-    context.lineTo(sideX + sideDirection * depth, top - perspectiveY);
-    context.lineTo(sideX + sideDirection * depth, groundY - perspectiveY);
-    context.lineTo(sideX, groundY);
-    context.closePath();
-    context.fill();
-
-    context.fillStyle = layer.roofColor;
-    context.beginPath();
-    context.moveTo(building.x, top);
-    context.lineTo(building.x + sideDirection * depth, top - perspectiveY);
-    context.lineTo(building.x + building.width + sideDirection * depth, top - perspectiveY);
-    context.lineTo(building.x + building.width, top);
-    context.closePath();
-    context.fill();
-
     context.fillStyle = layer.color;
     context.fillRect(building.x, top, building.width, building.height);
 
