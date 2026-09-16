@@ -49,28 +49,31 @@ ground.rotation.x = -Math.PI / 2;
 ground.position.z = -140;
 scene.add(ground);
 
-const CLUSTER_WIDTH = 90;
-const BUILDING_GAP = 0.25;
-const ROAD_WIDTH = 30;
-const BLOCK_PITCH = CLUSTER_WIDTH + ROAD_WIDTH;
+const CLUSTER_WIDTH = 45;
+const BUILDING_GAP = 0.125;
+const ROAD_WIDTH = 7.5;
+const MAX_BUILDINGS = 5;
+const ROAD_CYCLE_WIDTH = 4 * CLUSTER_WIDTH + 5 * ROAD_WIDTH;
 
 const layers = Array.from({ length: 5 }, (_, index) => ({
-    z: -index * 32, items: [], halfSpan: 0, clusterRemaining: 0, buildingWidth: 0
+    z: -index * 32, items: [], halfSpan: 0, clusterRemaining: 0, buildingWidth: 0, blockCount: 0, roadWidth: ROAD_WIDTH
 }));
 let paused = false;
 let previousTime = null;
 
 function nextBuildingLayout(layer) {
     if (layer.clusterRemaining === 0) {
-        const count = 1 + Math.floor(Math.random() * 10);
+        const count = 1 + Math.floor(Math.random() * MAX_BUILDINGS);
         layer.clusterRemaining = count;
+        layer.blockCount += 1;
+        layer.roadWidth = ROAD_WIDTH * (layer.blockCount % 4 === 0 ? 2 : 1);
         // Include all internal gaps in the fixed outer width of each cluster.
         layer.buildingWidth = (CLUSTER_WIDTH - BUILDING_GAP * (count - 1)) / count;
     }
     layer.clusterRemaining -= 1;
     return {
         width: layer.buildingWidth,
-        gap: layer.clusterRemaining > 0 ? BUILDING_GAP : ROAD_WIDTH
+        gap: layer.clusterRemaining > 0 ? BUILDING_GAP : layer.roadWidth
     };
 }
 
@@ -102,7 +105,7 @@ function extendLayer(layer) {
     while (!last || last.group.position.x - last.width / 2 < layer.halfSpan) {
         // All rows share the same world-space block grid, so roads align in depth.
         const x = last ? last.group.position.x + last.width / 2 + last.gap :
-            Math.floor(-layer.halfSpan / BLOCK_PITCH) * BLOCK_PITCH;
+            Math.floor(-layer.halfSpan / ROAD_CYCLE_WIDTH) * ROAD_CYCLE_WIDTH;
         last = addBuilding(layer, x);
     }
 }
@@ -118,6 +121,7 @@ function resize() {
         layer.items.forEach(({ group }) => scene.remove(group));
         layer.items = [];
         layer.clusterRemaining = 0;
+        layer.blockCount = 0;
         layer.halfSpan = halfSpan;
         extendLayer(layer);
     });
