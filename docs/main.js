@@ -53,12 +53,21 @@ ground.receiveShadow = true;
 scene.add(ground);
 
 const layers = Array.from({ length: 5 }, (_, index) => ({
-    z: -index * 32, items: [], halfSpan: 0
+    z: -index * 32, items: [], halfSpan: 0, clusterRemaining: 0
 }));
 let paused = false;
 let previousTime = null;
 
-function addBuilding(layer, x) {
+function nextBuildingGap(layer) {
+    if (layer.clusterRemaining === 0) {
+        layer.clusterRemaining = 1 + Math.floor(Math.random() * 10);
+    }
+    layer.clusterRemaining -= 1;
+    // Small alleys within a cluster; a wider open space after its last building.
+    return layer.clusterRemaining > 0 ? 1 + Math.random() * 2 : 22 + Math.random() * 18;
+}
+
+function addBuilding(layer, leftEdge) {
     const width = 8 + Math.random() * 9;
     const height = 12 + Math.random() * 25;
     const depth = 7 + Math.random() * 6;
@@ -78,9 +87,9 @@ function addBuilding(layer, x) {
         roof.receiveShadow = true;
         group.add(roof);
     }
-    group.position.set(x, 0, layer.z);
+    group.position.set(leftEdge + width / 2, 0, layer.z);
     scene.add(group);
-    const building = { group, width, height, depth, gap: 5 + Math.random() * 7 };
+    const building = { group, width, height, depth, gap: nextBuildingGap(layer) };
     layer.items.push(building);
     return building;
 }
@@ -88,7 +97,7 @@ function addBuilding(layer, x) {
 function extendLayer(layer) {
     let last = layer.items.at(-1);
     while (!last || last.group.position.x - last.width / 2 < layer.halfSpan) {
-        const x = last ? last.group.position.x + last.width / 2 + last.gap + 8.5 : -layer.halfSpan;
+        const x = last ? last.group.position.x + last.width / 2 + last.gap : -layer.halfSpan;
         last = addBuilding(layer, x);
     }
 }
@@ -130,6 +139,7 @@ function resize() {
         // Rebuild only when the viewport changes, disposing no shared resources.
         layer.items.forEach(({ group }) => scene.remove(group));
         layer.items = [];
+        layer.clusterRemaining = 0;
         layer.halfSpan = halfSpan;
         extendLayer(layer);
     });
@@ -142,12 +152,11 @@ function render(timestamp) {
     if (!paused) {
         layers.forEach((layer) => {
             layer.items.forEach(({ group }) => { group.position.x -= 8 * delta; });
-            while (layer.items[0].group.position.x + layer.items[0].width / 2 < -layer.halfSpan) {
-                const first = layer.items.shift();
-                const last = layer.items.at(-1);
-                first.group.position.x = last.group.position.x + last.width / 2 + last.gap + first.width / 2;
-                layer.items.push(first);
+            while (layer.items.length && layer.items[0].group.position.x + layer.items[0].width / 2 < -layer.halfSpan) {
+                scene.remove(layer.items.shift().group);
             }
+            // Continue the cluster at the right edge using shared geometry/materials.
+            extendLayer(layer);
         });
     }
     updateWindowLights();
