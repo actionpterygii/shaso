@@ -12,6 +12,10 @@
 - 実装後は、変更したファイルをユーザーに示したうえで、個別の承認を待たずに commit と push を行う。
 - commit と push の完了後は、変更したすべてのファイルについて、変更箇所の行番号と内容の要約を必ずユーザーに提示する。
 
+## 表示バージョン
+- 公開サイトの更新時は、一時停止ボタン横のバージョンを v1、v2、v3 のように1ずつ増やす。
+- docs/index.html の表示・aria-label と main.js / style.css のクエリ文字列の番号を同じ値に揃える。
+
 ## 確認方法
 - 現在 Codex ではブラウザ確認ができないため、ユーザーが `https://shaso.actionpterygii.com/` を確認する。
 - Codex 側では必要に応じて HTML / CSS / JavaScript の静的確認を行う。

@@ -11,7 +11,7 @@
     <meta property="og:description" content="shaso">
     <meta property="og:url" content="https://shaso.actionpterygii.com/">
     <meta property="og:type" content="website">
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./style.css?v=1">
     <title>shaso</title>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-BXY5JHZVCM"></script>
@@ -25,8 +25,11 @@
 <body>
     <main id="app">
         <canvas id="window-view" aria-label="横に流れる街並みのアニメーション"></canvas>
-        <button id="toggle" type="button" aria-pressed="false">一時停止</button>
+        <div class="controls">
+            <button id="toggle" type="button" aria-pressed="false">一時停止</button>
+            <span class="version" aria-label="バージョン1">v1</span>
+        </div>
     </main>
-    <script type="module" src="./main.js"></script>
+    <script type="module" src="./main.js?v=1"></script>
 </body>
 </html>

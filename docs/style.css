@@ -16,11 +16,22 @@ body {
     inset: 0;
 }
 
-#toggle {
+.controls {
     position: fixed;
     top: 20px;
     left: 20px;
     z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.version {
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+}
+
+#toggle {
     padding: 8px 12px;
     border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 999px;
