@@ -51,6 +51,8 @@ scene.add(ground);
 
 const CLUSTER_WIDTH = 90;
 const BUILDING_GAP = 0.25;
+const ROAD_WIDTH = 30;
+const BLOCK_PITCH = CLUSTER_WIDTH + ROAD_WIDTH;
 
 const layers = Array.from({ length: 5 }, (_, index) => ({
     z: -index * 32, items: [], halfSpan: 0, clusterRemaining: 0, buildingWidth: 0
@@ -68,7 +70,7 @@ function nextBuildingLayout(layer) {
     layer.clusterRemaining -= 1;
     return {
         width: layer.buildingWidth,
-        gap: layer.clusterRemaining > 0 ? BUILDING_GAP : 22 + Math.random() * 18
+        gap: layer.clusterRemaining > 0 ? BUILDING_GAP : ROAD_WIDTH
     };
 }
 
@@ -98,7 +100,9 @@ function addBuilding(layer, leftEdge) {
 function extendLayer(layer) {
     let last = layer.items.at(-1);
     while (!last || last.group.position.x - last.width / 2 < layer.halfSpan) {
-        const x = last ? last.group.position.x + last.width / 2 + last.gap : -layer.halfSpan;
+        // All rows share the same world-space block grid, so roads align in depth.
+        const x = last ? last.group.position.x + last.width / 2 + last.gap :
+            Math.floor(-layer.halfSpan / BLOCK_PITCH) * BLOCK_PITCH;
         last = addBuilding(layer, x);
     }
 }
