@@ -4,8 +4,8 @@ const toggle = document.querySelector('#toggle');
 
 const layers = Array.from({ length: 20 }, (_, index) => {
     const progress = index / 19;
-    const hue = 198 + progress * 2;
-    const lightness = 58 - progress * 38;
+    const hue = 220 + progress * 4;
+    const lightness = 12 - progress * 8;
 
     return {
         speed: 9 + progress * 86,
@@ -69,14 +69,22 @@ function drawBuilding(building, layer, groundY) {
         context.fillRect(building.x + building.width * 0.14, top - 10, building.width * 0.72, 10);
     }
 
-    const lightLevels = [0, 0.18, 0.36, 0.58, 0.82];
+    const lightLevels = [0, 0, 0.35, 0.65, 1];
     let row = 0;
     for (let y = top + 16; y < groundY - 10; y += 19) {
         let column = 0;
         for (let x = building.x + 12; x < building.x + building.width - 8; x += 18) {
             const level = (building.lightSeed + row * 7 + column * 11) % lightLevels.length;
-            context.fillStyle = `rgba(255, 231, 158, ${lightLevels[level]})`;
-            context.fillRect(x, y, 7, 7);
+            const intensity = lightLevels[level];
+            if (intensity > 0) {
+                // A soft glow around lit windows is the only lighting effect.
+                context.fillStyle = `rgba(255, 195, 100, ${intensity * 0.035})`;
+                context.fillRect(x - 4, y - 4, 15, 15);
+                context.fillStyle = `rgba(255, 207, 120, ${intensity * 0.09})`;
+                context.fillRect(x - 2, y - 2, 11, 11);
+                context.fillStyle = `rgba(255, 225, 155, ${intensity})`;
+                context.fillRect(x, y, 7, 7);
+            }
             column += 1;
         }
         row += 1;
@@ -85,15 +93,11 @@ function drawBuilding(building, layer, groundY) {
 
 function drawBackground() {
     const sky = context.createLinearGradient(0, 0, 0, height);
-    sky.addColorStop(0, '#83cce8');
-    sky.addColorStop(0.6, '#d9edf0');
-    sky.addColorStop(1, '#f3d7b0');
+    sky.addColorStop(0, '#03050c');
+    sky.addColorStop(0.6, '#080d1a');
+    sky.addColorStop(1, '#101727');
     context.fillStyle = sky;
     context.fillRect(0, 0, width, height);
-    context.fillStyle = 'rgba(255, 250, 216, 0.72)';
-    context.beginPath();
-    context.arc(width * 0.76, height * 0.2, 45, 0, Math.PI * 2);
-    context.fill();
 }
 
 function render(timestamp) {
@@ -116,7 +120,7 @@ function render(timestamp) {
         }
     });
 
-    context.fillStyle = '#172d37';
+    context.fillStyle = '#03050a';
     context.fillRect(0, height * 0.91, width, height * 0.09);
     requestAnimationFrame(render);
 }
