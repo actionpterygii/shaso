@@ -52,23 +52,31 @@ ground.position.z = -140;
 ground.receiveShadow = true;
 scene.add(ground);
 
+const CLUSTER_WIDTH = 90;
+const BUILDING_GAP = 0.25;
+
 const layers = Array.from({ length: 5 }, (_, index) => ({
-    z: -index * 32, items: [], halfSpan: 0, clusterRemaining: 0
+    z: -index * 32, items: [], halfSpan: 0, clusterRemaining: 0, buildingWidth: 0
 }));
 let paused = false;
 let previousTime = null;
 
-function nextBuildingGap(layer) {
+function nextBuildingLayout(layer) {
     if (layer.clusterRemaining === 0) {
-        layer.clusterRemaining = 1 + Math.floor(Math.random() * 10);
+        const count = 1 + Math.floor(Math.random() * 10);
+        layer.clusterRemaining = count;
+        // Include all internal gaps in the fixed outer width of each cluster.
+        layer.buildingWidth = (CLUSTER_WIDTH - BUILDING_GAP * (count - 1)) / count;
     }
     layer.clusterRemaining -= 1;
-    // Small alleys within a cluster; a wider open space after its last building.
-    return layer.clusterRemaining > 0 ? 1 + Math.random() * 2 : 22 + Math.random() * 18;
+    return {
+        width: layer.buildingWidth,
+        gap: layer.clusterRemaining > 0 ? BUILDING_GAP : 22 + Math.random() * 18
+    };
 }
 
 function addBuilding(layer, leftEdge) {
-    const width = 8 + Math.random() * 9;
+    const { width, gap } = nextBuildingLayout(layer);
     const height = 12 + Math.random() * 25;
     const depth = 7 + Math.random() * 6;
     const facade = facades[Math.floor(Math.random() * facades.length)];
@@ -89,7 +97,7 @@ function addBuilding(layer, leftEdge) {
     }
     group.position.set(leftEdge + width / 2, 0, layer.z);
     scene.add(group);
-    const building = { group, width, height, depth, gap: nextBuildingGap(layer) };
+    const building = { group, width, height, depth, gap };
     layer.items.push(building);
     return building;
 }
