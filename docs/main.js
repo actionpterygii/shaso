@@ -12,8 +12,6 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1;
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const box = new THREE.BoxGeometry(1, 1, 1);
 const wall = new THREE.MeshStandardMaterial({
@@ -30,8 +28,7 @@ const facades = Array.from({ length: 8 }, () => {
     ctx.fillRect(0, 0, 128, 256);
     for (let row = 0; row < 10; row += 1) {
         for (let column = 0; column < 5; column += 1) {
-            // The lowest central window also anchors the nearby light source.
-            const lit = (row === 9 && column === 2) || Math.random() > 0.45;
+            const lit = Math.random() > 0.45;
             if (!lit) continue;
             const value = Math.floor(100 + Math.random() * 155);
             ctx.fillStyle = `rgb(${value}, ${value}, ${value})`;
@@ -49,7 +46,6 @@ const facades = Array.from({ length: 8 }, () => {
 const ground = new THREE.Mesh(new THREE.PlaneGeometry(2400, 600), wall);
 ground.rotation.x = -Math.PI / 2;
 ground.position.z = -140;
-ground.receiveShadow = true;
 scene.add(ground);
 
 const CLUSTER_WIDTH = 90;
@@ -84,15 +80,11 @@ function addBuilding(layer, leftEdge) {
     const body = new THREE.Mesh(box, [facade, facade, wall, wall, facade, facade]);
     body.scale.set(width, height, depth);
     body.position.y = height / 2;
-    body.castShadow = true;
-    body.receiveShadow = true;
     group.add(body);
     if (Math.random() > 0.6) {
         const roof = new THREE.Mesh(box, wall);
         roof.scale.set(width * 0.6, 1.5, depth * 0.65);
         roof.position.y = height + 0.75;
-        roof.castShadow = true;
-        roof.receiveShadow = true;
         group.add(roof);
     }
     group.position.set(leftEdge + width / 2, 0, layer.z);
@@ -110,33 +102,6 @@ function extendLayer(layer) {
     }
 }
 
-// Only window lights illuminate surfaces. No sun, ambient light or environment map.
-// Limit shadow-casting lights to three nearby windows to keep rendering affordable.
-const windowLights = Array.from({ length: 3 }, () => {
-    const light = new THREE.SpotLight('#ffce88', 100, 35, Math.PI / 3, 0.8, 2);
-    light.castShadow = true;
-    light.shadow.mapSize.set(512, 512);
-    light.shadow.bias = -0.001;
-    light.shadow.normalBias = 0.04;
-    scene.add(light, light.target);
-    return light;
-});
-
-function updateWindowLights() {
-    const nearest = [...layers[0].items].sort((a, b) =>
-        Math.abs(a.group.position.x) - Math.abs(b.group.position.x));
-    windowLights.forEach((light, index) => {
-        const building = nearest[index];
-        light.visible = Boolean(building);
-        if (!building) return;
-        const x = building.group.position.x;
-        const z = building.group.position.z + building.depth / 2;
-        const y = building.height * (1 - 233 / 256);
-        light.position.set(x, y, z + 0.25);
-        light.target.position.set(x, 0, z + 4);
-    });
-}
-
 function resize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -151,7 +116,6 @@ function resize() {
         layer.halfSpan = halfSpan;
         extendLayer(layer);
     });
-    updateWindowLights();
 }
 
 function render(timestamp) {
@@ -167,7 +131,6 @@ function render(timestamp) {
             extendLayer(layer);
         });
     }
-    updateWindowLights();
     renderer.render(scene, camera);
 }
 
