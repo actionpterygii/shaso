@@ -3,7 +3,8 @@ import * as THREE from './vendor/three/three.module.js';
 const canvas = document.querySelector('#window-view');
 const toggle = document.querySelector('#toggle');
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('#03050c');
+scene.background = new THREE.Color('#080c16');
+scene.add(new THREE.AmbientLight('#b8caff', 0.5));
 const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 400);
 // A level camera keeps vertical walls vertical; only the city translates.
 camera.position.set(0, 14, 65);
