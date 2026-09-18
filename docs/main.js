@@ -56,7 +56,7 @@ const MAX_BUILDINGS = 5;
 const ROAD_CYCLE_WIDTH = 4 * CLUSTER_WIDTH + 5 * ROAD_WIDTH;
 
 const layers = Array.from({ length: 5 }, (_, index) => ({
-    z: -index * 32, items: [], halfSpan: 0, clusterRemaining: 0, buildingWidth: 0, blockCount: 0, roadWidth: ROAD_WIDTH
+    z: -index * 32, items: [], halfSpan: 0, clusterRemaining: 0, buildingWidths: [], blockCount: 0, roadWidth: ROAD_WIDTH
 }));
 let paused = false;
 let previousTime = null;
@@ -68,11 +68,14 @@ function nextBuildingLayout(layer) {
         layer.blockCount += 1;
         layer.roadWidth = ROAD_WIDTH * (layer.blockCount % 4 === 0 ? 2 : 1);
         // Include all internal gaps in the fixed outer width of each cluster.
-        layer.buildingWidth = (CLUSTER_WIDTH - BUILDING_GAP * (count - 1)) / count;
+        const availableWidth = CLUSTER_WIDTH - BUILDING_GAP * (count - 1);
+        const weights = Array.from({ length: count }, () => 0.5 + Math.random());
+        const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+        layer.buildingWidths = weights.map(weight => availableWidth * weight / totalWeight);
     }
     layer.clusterRemaining -= 1;
     return {
-        width: layer.buildingWidth,
+        width: layer.buildingWidths[layer.clusterRemaining],
         gap: layer.clusterRemaining > 0 ? BUILDING_GAP : layer.roadWidth
     };
 }
