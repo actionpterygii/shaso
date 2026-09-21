@@ -11,7 +11,7 @@
     <meta property="og:description" content="shaso">
     <meta property="og:url" content="https://shaso.actionpterygii.com/">
     <meta property="og:type" content="website">
-    <link rel="stylesheet" href="./style.css?v=6">
+    <link rel="stylesheet" href="./style.css?v=7">
     <title>shaso</title>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-BXY5JHZVCM"></script>
@@ -27,9 +27,18 @@
         <canvas id="window-view" aria-label="横に流れる街並みのアニメーション"></canvas>
         <div class="controls">
             <button id="toggle" type="button" aria-pressed="false">一時停止</button>
-            <span class="version" aria-label="バージョン6">v6</span>
+            <span class="version" aria-label="バージョン7">v7</span>
+            <div class="sky-control">
+                <label for="sky-darkness">空の色（確認用）</label>
+                <div class="sky-range">
+                    <span>藍色</span>
+                    <input id="sky-darkness" type="range" min="0" max="100" step="1" value="70" aria-describedby="sky-value">
+                    <span>黒</span>
+                </div>
+                <output id="sky-value" for="sky-darkness"></output>
+            </div>
         </div>
     </main>
-    <script type="module" src="./main.js?v=6"></script>
+    <script type="module" src="./main.js?v=7"></script>
 </body>
 </html>

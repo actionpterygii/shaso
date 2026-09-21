@@ -22,6 +22,8 @@ body {
     left: 20px;
     z-index: 1;
     display: flex;
+    flex-wrap: wrap;
+    width: min(300px, calc(100vw - 40px));
     align-items: center;
     gap: 10px;
 }
@@ -51,4 +53,30 @@ canvas {
     display: block;
     width: 100%;
     height: 100%;
+}
+
+.sky-control {
+    flex-basis: 100%;
+    min-width: 0;
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(11, 29, 47, 0.85);
+    font-size: 12px;
+}
+
+.sky-range {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#sky-darkness {
+    flex: 1;
+    min-width: 0;
+    height: 28px;
+    accent-color: #a7b8ec;
+}
+
+#sky-value {
+    font-variant-numeric: tabular-nums;
 }

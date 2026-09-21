@@ -3,7 +3,23 @@ import * as THREE from './vendor/three/three.module.js';
 const canvas = document.querySelector('#window-view');
 const toggle = document.querySelector('#toggle');
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('#080c16');
+scene.background = new THREE.Color();
+const skySlider = document.querySelector('#sky-darkness');
+const skyValue = document.querySelector('#sky-value');
+const indigo = [27, 40, 80];
+
+function updateSkyColor() {
+    const darkness = Number(skySlider.value);
+    const hex = '#' + indigo.map(channel =>
+        Math.round(channel * (1 - darkness / 100)).toString(16).padStart(2, '0')
+    ).join('');
+    scene.background.set(hex);
+    skyValue.textContent = `${darkness}% / ${hex}`;
+    skySlider.setAttribute('aria-valuetext', `黒に近づける割合 ${darkness}%、色 ${hex}`);
+}
+
+skySlider.addEventListener('input', updateSkyColor);
+updateSkyColor();
 scene.add(new THREE.AmbientLight('#b8caff', 0.5));
 const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 400);
 // A level camera keeps vertical walls vertical; only the city translates.
