@@ -1,10 +1,12 @@
 import * as THREE from './vendor/three/three.module.js';
+import { setupLightingControls } from './lighting-controls.js?v=11';
 
 const canvas = document.querySelector('#window-view');
 const toggle = document.querySelector('#toggle');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#0e1428');
-scene.add(new THREE.AmbientLight('#b8caff', 0.5));
+const ambientLight = new THREE.AmbientLight('#b8caff', 0.5);
+scene.add(ambientLight);
 const sideLight = new THREE.DirectionalLight('#b8caff', 0.6);
 sideLight.position.set(-60, 80, 40);
 scene.add(sideLight);
@@ -47,10 +49,12 @@ const facades = Array.from({ length: 8 }, () => {
     });
 });
 
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(2400, 1200), wall);
+const groundMaterial = wall.clone();
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(2400, 1200), groundMaterial);
 ground.rotation.x = -Math.PI / 2;
 ground.position.z = -300;
 scene.add(ground);
+setupLightingControls({ THREE, ambientLight, sideLight, wall, facades, groundMaterial });
 
 const CLUSTER_WIDTH = 45;
 const BUILDING_GAP = 0.125;
