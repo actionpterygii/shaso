@@ -3,25 +3,9 @@ import * as THREE from './vendor/three/three.module.js';
 const canvas = document.querySelector('#window-view');
 const toggle = document.querySelector('#toggle');
 const scene = new THREE.Scene();
-scene.background = new THREE.Color();
-const skySlider = document.querySelector('#sky-darkness');
-const skyValue = document.querySelector('#sky-value');
-const indigo = [27, 40, 80];
-
-function updateSkyColor() {
-    const darkness = Number(skySlider.value);
-    const hex = '#' + indigo.map(channel =>
-        Math.round(channel * (1 - darkness / 100)).toString(16).padStart(2, '0')
-    ).join('');
-    scene.background.set(hex);
-    skyValue.textContent = `${darkness}% / ${hex}`;
-    skySlider.setAttribute('aria-valuetext', `黒に近づける割合 ${darkness}%、色 ${hex}`);
-}
-
-skySlider.addEventListener('input', updateSkyColor);
-updateSkyColor();
+scene.background = new THREE.Color('#0e1428');
 scene.add(new THREE.AmbientLight('#b8caff', 0.5));
-const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 400);
+const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 800);
 // A level camera keeps vertical walls vertical; only the city translates.
 camera.position.set(0, 14, 65);
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -60,9 +44,9 @@ const facades = Array.from({ length: 8 }, () => {
     });
 });
 
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(2400, 600), wall);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(2400, 1200), wall);
 ground.rotation.x = -Math.PI / 2;
-ground.position.z = -140;
+ground.position.z = -300;
 scene.add(ground);
 
 const CLUSTER_WIDTH = 45;
@@ -71,8 +55,8 @@ const ROAD_WIDTH = 7.5;
 const MAX_BUILDINGS = 5;
 const ROAD_CYCLE_WIDTH = 4 * CLUSTER_WIDTH + 5 * ROAD_WIDTH;
 
-const layers = Array.from({ length: 5 }, (_, index) => ({
-    z: -index * 32, items: [], halfSpan: 0, clusterRemaining: 0, buildingWidths: [], blockCount: 0, roadWidth: ROAD_WIDTH
+const layers = Array.from({ length: 10 }, (_, index) => ({
+    z: -(index * (CLUSTER_WIDTH + ROAD_WIDTH) + Math.floor(index / 4) * ROAD_WIDTH), items: [], halfSpan: 0, clusterRemaining: 0, buildingWidths: [], blockCount: 0, roadWidth: ROAD_WIDTH
 }));
 let paused = false;
 let previousTime = null;
@@ -99,7 +83,7 @@ function nextBuildingLayout(layer) {
 function addBuilding(layer, leftEdge) {
     const { width, gap } = nextBuildingLayout(layer);
     const height = 12 + Math.random() * 25;
-    const depth = 7 + Math.random() * 6;
+    const depth = CLUSTER_WIDTH;
     const facade = facades[Math.floor(Math.random() * facades.length)];
     const group = new THREE.Group();
     const body = new THREE.Mesh(box, [facade, facade, wall, wall, facade, facade]);
@@ -135,7 +119,7 @@ function resize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     layers.forEach((layer) => {
         const halfSpan = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) *
-            (camera.position.z - layer.z + 7) * camera.aspect + 30;
+            (camera.position.z - layer.z + CLUSTER_WIDTH / 2) * camera.aspect + 30;
         // Rebuild only when the viewport changes, disposing no shared resources.
         layer.items.forEach(({ group }) => scene.remove(group));
         layer.items = [];
