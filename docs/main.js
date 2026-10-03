@@ -1,14 +1,14 @@
 import * as THREE from './vendor/three/three.module.js';
-import { setupLightingControls } from './lighting-controls.js?v=11';
 
 const canvas = document.querySelector('#window-view');
 const toggle = document.querySelector('#toggle');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#0e1428');
-const ambientLight = new THREE.AmbientLight('#b8caff', 0.5);
+const ambientLight = new THREE.AmbientLight('#b8caff', 0);
 scene.add(ambientLight);
-const sideLight = new THREE.DirectionalLight('#b8caff', 0.6);
-sideLight.position.set(-60, 80, 40);
+const sideLight = new THREE.DirectionalLight('#b8caff', 5.1);
+const lightAzimuth = THREE.MathUtils.degToRad(-49);
+sideLight.position.set(100 * Math.sin(lightAzimuth), 0, 100 * Math.cos(lightAzimuth));
 scene.add(sideLight);
 const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 800);
 // A level camera keeps vertical walls vertical; only the city translates.
@@ -21,7 +21,7 @@ renderer.toneMappingExposure = 1;
 
 const box = new THREE.BoxGeometry(1, 1, 1);
 const wall = new THREE.MeshStandardMaterial({
-    color: '#151b28', roughness: 0.92, metalness: 0
+    color: '#000000', roughness: 0.92, metalness: 0
 });
 
 // Reuse a small set of emission maps rather than creating one light per window.
@@ -44,7 +44,7 @@ const facades = Array.from({ length: 8 }, () => {
     const emission = new THREE.CanvasTexture(textureCanvas);
     emission.colorSpace = THREE.SRGBColorSpace;
     return new THREE.MeshStandardMaterial({
-        color: '#151b28', roughness: 0.92, metalness: 0,
+        color: '#000000', roughness: 0.92, metalness: 0,
         emissive: '#ffce88', emissiveIntensity: 2.4, emissiveMap: emission
     });
 });
@@ -54,7 +54,6 @@ const ground = new THREE.Mesh(new THREE.PlaneGeometry(2400, 1200), groundMateria
 ground.rotation.x = -Math.PI / 2;
 ground.position.z = -300;
 scene.add(ground);
-setupLightingControls({ THREE, ambientLight, sideLight, wall, facades, groundMaterial });
 
 const CLUSTER_WIDTH = 45;
 const BUILDING_GAP = 0.125;
