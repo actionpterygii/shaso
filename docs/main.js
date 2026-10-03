@@ -5,6 +5,9 @@ const toggle = document.querySelector('#toggle');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#0e1428');
 scene.add(new THREE.AmbientLight('#b8caff', 0.5));
+const sideLight = new THREE.DirectionalLight('#b8caff', 0.6);
+sideLight.position.set(-60, 80, 40);
+scene.add(sideLight);
 const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 800);
 // A level camera keeps vertical walls vertical; only the city translates.
 camera.position.set(0, 14, 65);
