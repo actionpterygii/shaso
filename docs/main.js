@@ -55,8 +55,10 @@ const ROAD_WIDTH = 7.5;
 const MAX_BUILDINGS = 5;
 const ROAD_CYCLE_WIDTH = 4 * CLUSTER_WIDTH + 5 * ROAD_WIDTH;
 
-const layers = Array.from({ length: 10 }, (_, index) => ({
-    z: -(index * (CLUSTER_WIDTH + ROAD_WIDTH) + Math.floor(index / 4) * ROAD_WIDTH), items: [], halfSpan: 0, clusterRemaining: 0, buildingWidths: [], blockCount: 0, roadWidth: ROAD_WIDTH
+const LAYER_COUNT = 10;
+const layers = Array.from({ length: LAYER_COUNT }, (_, index) => ({
+    z: -(index * (CLUSTER_WIDTH + BUILDING_GAP) + Math.floor(index / 4) * (ROAD_WIDTH - BUILDING_GAP)),
+    continuous: index === LAYER_COUNT - 1, items: [], halfSpan: 0, clusterRemaining: 0, buildingWidths: [], blockCount: 0, roadWidth: ROAD_WIDTH
 }));
 let paused = false;
 let previousTime = null;
@@ -68,7 +70,7 @@ function nextBuildingLayout(layer) {
         layer.blockCount += 1;
         layer.roadWidth = ROAD_WIDTH * (layer.blockCount % 4 === 0 ? 2 : 1);
         // Include all internal gaps in the fixed outer width of each cluster.
-        const availableWidth = CLUSTER_WIDTH - BUILDING_GAP * (count - 1);
+        const availableWidth = CLUSTER_WIDTH - (layer.continuous ? 0 : BUILDING_GAP) * (count - 1);
         const weights = Array.from({ length: count }, () => 0.5 + Math.random());
         const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
         layer.buildingWidths = weights.map(weight => availableWidth * weight / totalWeight);
@@ -76,7 +78,7 @@ function nextBuildingLayout(layer) {
     layer.clusterRemaining -= 1;
     return {
         width: layer.buildingWidths[layer.clusterRemaining],
-        gap: layer.clusterRemaining > 0 ? BUILDING_GAP : layer.roadWidth
+        gap: layer.continuous ? 0 : (layer.clusterRemaining > 0 ? BUILDING_GAP : layer.roadWidth)
     };
 }
 
